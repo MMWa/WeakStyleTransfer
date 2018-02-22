@@ -178,7 +178,7 @@ if __name__ == "__main__":
                               weight_style=50.0,
                               num_iterations=40,
                               step_size=9.0, log_images=False, freqP_flay=False)
-    save_image(img, "img/newStyle/zStyle.jpg", 0.3)
+    save_image(img, "img/newStyle/zStyle.jpg")
 
     # apply heavily styled and unsmoothed image onto original image
     img = weak_style_transfer(session=session, model=model, content_image=content_image,
