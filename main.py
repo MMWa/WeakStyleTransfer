@@ -30,6 +30,19 @@ def save_image(image, filename):
         PIL.Image.fromarray(image).save(file, 'jpeg')
 
 
+def save_image_smoothed(image, filename, sigma):
+    image = gaussian_filter(image, sigma=sigma)
+
+    image = np.clip(image, 0.0, 255.0)
+
+    # convert to bytes
+    image = image.astype(np.uint8)
+
+    with open(filename, 'wb') as file:
+        PIL.Image.fromarray(image).save(file, 'jpeg')
+    return image
+
+
 # mean square error
 def mse(a, b):
     return tf.reduce_mean(tf.square(a - b))
@@ -144,24 +157,15 @@ def weak_style_transfer(session, model, content_image, style_image,
     return mixed_image
 
 
-def save_image_smoothed(image, filename, sigma):
-    image = gaussian_filter(image, sigma=sigma)
-
-    image = np.clip(image, 0.0, 255.0)
-
-    # convert to bytes
-    image = image.astype(np.uint8)
-
-    with open(filename, 'wb') as file:
-        PIL.Image.fromarray(image).save(file, 'jpeg')
-    return image
-
 if __name__ == "__main__":
-    content_filename = 'img/sources/por.jpg'
-    content_image = load_image(content_filename, max_size=1200)
+    # 600 works really fast
+    max_size = 1200
 
-    style_filename = 'img/styles/blackred.jpg'
-    style_image = load_image(style_filename, max_size=1200)
+    content_filename = 'img/sources/por.jpg'
+    content_image = load_image(content_filename, max_size=max_size)
+
+    style_filename = 'img/styles/orange.jpg'
+    style_image = load_image(style_filename, max_size=max_size)
 
     content_layer_ids = list([1, 2])
     style_layer_ids = list(range(8))
@@ -178,6 +182,7 @@ if __name__ == "__main__":
                               weight_style=50.0,
                               num_iterations=40,
                               step_size=9.0, log_images=False, freqP_flay=False)
+
     save_image(img, "img/newStyle/zStyle.jpg")
 
     # apply heavily styled and unsmoothed image onto original image
