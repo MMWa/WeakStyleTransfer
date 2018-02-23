@@ -1,9 +1,10 @@
-import tensorflow as tf
-import numpy as np
 import PIL.Image
-from tqdm import tqdm
-from models.mobileNet import MobileNet
+import numpy as np
+import tensorflow as tf
 from scipy.ndimage.filters import gaussian_filter
+from tqdm import tqdm
+
+from models.mobileNet import MobileNet
 
 
 def load_image(filename, max_size=None):
@@ -125,7 +126,7 @@ def weak_style_transfer(session, model, content_image, style_image,
     # List of tensors that we will run in each optimization iteration.
     run_list = [gradient, update_adj_content, update_adj_style]
 
-    mixed_image = content_image - 40
+    mixed_image = content_image
 
     for i in tqdm(range(num_iterations)):
         # Create a feed-dict with the mixed-image.
@@ -143,15 +144,12 @@ def weak_style_transfer(session, model, content_image, style_image,
         mixed_image = np.clip(mixed_image, 0.0, 255.0)
         if (log_images == True):
             if (i % 5 == 0) and freqP_flay == False:
-                print("Iteration:", i)
-                newIM = gaussian_filter(mixed_image, sigma=.3)
-                save_image(newIM, "img/newStyle/nStyle" + str(i) + ".jpg")
+                print("Image out at iteration:", i)
+                save_image(mixed_image, "img/newStyle/nStyle" + str(i) + ".jpg")
 
             if (freqP_flay == True and i % 5 == 0):
                 save_image(mixed_image, "img/newStyle/zStyle" + str(i) + ".jpg")
 
-            newIM = gaussian_filter(mixed_image, sigma=.3)
-            save_image(newIM, "img/newStyle/FinalImage.jpg")
 
     # Return the mixed-image.
     return mixed_image
@@ -159,16 +157,17 @@ def weak_style_transfer(session, model, content_image, style_image,
 
 if __name__ == "__main__":
     # 600 works really fast
-    max_size = 1200
+    max_size = 600
 
-    content_filename = 'img/sources/por.jpg'
+    content_filename = 'img/sources/streetTree.jpg'
     content_image = load_image(content_filename, max_size=max_size)
 
     style_filename = 'img/styles/orange.jpg'
     style_image = load_image(style_filename, max_size=max_size)
 
-    content_layer_ids = list([1, 2])
-    style_layer_ids = list(range(8))
+    content_layer_ids = list([1, 2, 3, 4, 10, 11, 12])
+    style_layer_ids = list([1, 2, 3, 4, 5, 6, 7, 8, 12])
+    mix_layers = list([1, 2, 3, 4, 5, 6, 7, 8])
 
     model = MobileNet()
 
@@ -188,12 +187,12 @@ if __name__ == "__main__":
     # apply heavily styled and unsmoothed image onto original image
     img = weak_style_transfer(session=session, model=model, content_image=content_image,
                               style_image=img,
-                              content_layer_ids=list(range(4)),
-                              style_layer_ids=content_layer_ids,
+                              content_layer_ids=mix_layers,
+                              style_layer_ids=mix_layers,
                               weight_content=1.0,
-                              weight_style=5.0,
+                              weight_style=10.0,
                               num_iterations=40,
-                              step_size=5.0, log_images=False, freqP_flay=False)
+                              step_size=3.0, log_images=False, freqP_flay=False)
 
     save_image_smoothed(img, "img/newStyle/Style.jpg", 0.3)
 

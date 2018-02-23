@@ -1,31 +1,34 @@
 # The pre-trained model class
 
+import os
+
 import numpy as np
 import tensorflow as tf
-import os
 
 data_dir = "models/mobilenet_v1/"
 
 # TF Graph
 path_graph_def = "graph_freeze.pb"
 
+
 class MobileNet:
     # Name of the tensor for feeding the input image.
     tensor_name_input_image = 'image:0'
 
+
     # Names of layers to be used, use get_all_layer_names to find them
     layer_names = ['MobilenetV1/Conv2d_0/Conv2D',
-                   'MobilenetV1/Conv2d_1_pointwise/Conv2D',
-                   'MobilenetV1/Conv2d_2_pointwise/Conv2D',
-                   'MobilenetV1/Conv2d_3_pointwise/Conv2D',
-                   'MobilenetV1/Conv2d_4_pointwise/Conv2D',
-                   'MobilenetV1/Conv2d_5_pointwise/Conv2D',
-                   'MobilenetV1/Conv2d_6_pointwise/Conv2D',
-                   'MobilenetV1/Conv2d_7_pointwise/Conv2D',
-                   'MobilenetV1/Conv2d_8_pointwise/Conv2D',
-                   'MobilenetV1/Conv2d_9_pointwise/Conv2D',
-                   'MobilenetV1/Conv2d_10_pointwise/Conv2D',
-                   'MobilenetV1/Conv2d_11_pointwise/Conv2D',
+                   'MobilenetV1/Conv2d_1_depthwise/depthwise',
+                   'MobilenetV1/Conv2d_2_depthwise/depthwise',
+                   'MobilenetV1/Conv2d_3_depthwise/depthwise',
+                   'MobilenetV1/Conv2d_4_depthwise/depthwise',
+                   'MobilenetV1/Conv2d_5_depthwise/depthwise',
+                   'MobilenetV1/Conv2d_6_depthwise/depthwise',
+                   'MobilenetV1/Conv2d_7_depthwise/depthwise',
+                   'MobilenetV1/Conv2d_8_depthwise/depthwise',
+                   'MobilenetV1/Conv2d_9_depthwise/depthwise',
+                   'MobilenetV1/Conv2d_10_depthwise/depthwise',
+                   'MobilenetV1/Conv2d_11_depthwise/depthwise',
                    'Conv2d_3_pool']
 
     def __init__(self):
@@ -39,7 +42,6 @@ class MobileNet:
                 graph_def.ParseFromString(file.read())
                 tf.import_graph_def(graph_def, name='')
 
-            print(self.get_all_layer_names())
             # Get a reference to the tensor for inputting images to the graph.
             self.input = self.graph.get_tensor_by_name(self.tensor_name_input_image)
 
@@ -75,3 +77,43 @@ class MobileNet:
         feed_dict = {self.tensor_name_input_image: image}
 
         return feed_dict
+
+
+'''
+    layer_names = ['MobilenetV1/Conv2d_0/Conv2D',
+                   'MobilenetV1/Conv2d_1_depthwise/depthwise',
+
+                   'MobilenetV1/Conv2d_1_pointwise/Conv2D',
+
+                   'MobilenetV1/Conv2d_2_depthwise/depthwise',
+                   'MobilenetV1/Conv2d_2_pointwise/Conv2D',
+
+                   'MobilenetV1/Conv2d_3_depthwise/depthwise',
+                   'MobilenetV1/Conv2d_3_pointwise/Conv2D',
+
+                   'MobilenetV1/Conv2d_4_depthwise/depthwise',
+                   'MobilenetV1/Conv2d_4_pointwise/Conv2D',
+
+                   'MobilenetV1/Conv2d_5_depthwise/depthwise',
+                   'MobilenetV1/Conv2d_5_pointwise/Conv2D',
+
+                   'MobilenetV1/Conv2d_6_depthwise/depthwise',
+                   'MobilenetV1/Conv2d_6_pointwise/Conv2D',
+
+                   'MobilenetV1/Conv2d_7_depthwise/depthwise',
+                   'MobilenetV1/Conv2d_7_pointwise/Conv2D',
+
+                   'MobilenetV1/Conv2d_8_depthwise/depthwise',
+                   'MobilenetV1/Conv2d_8_pointwise/Conv2D',
+
+                   'MobilenetV1/Conv2d_9_depthwise/depthwise',
+                   'MobilenetV1/Conv2d_9_pointwise/Conv2D',
+
+                   'MobilenetV1/Conv2d_10_depthwise/depthwise',
+                   'MobilenetV1/Conv2d_10_pointwise/Conv2D',
+
+                   'MobilenetV1/Conv2d_11_depthwise/depthwise',
+                   'MobilenetV1/Conv2d_11_pointwise/Conv2D',
+
+                   'Conv2d_3_pool']
+'''
